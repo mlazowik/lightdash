@@ -22,7 +22,8 @@ export const useFilters = () => {
     );
 
     const addFilter = useCallback(
-        (field: Field) => setFilters(addFilterRule(filters, field)),
+        (field: Field, value: any) =>
+            setFilters(addFilterRule({ filters, field, value })),
         [filters, setFilters],
     );
 

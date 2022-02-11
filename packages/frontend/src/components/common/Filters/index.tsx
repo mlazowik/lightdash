@@ -50,7 +50,7 @@ const FiltersForm: FC<Props> = ({
 
     const addFieldRule = useCallback(
         (field: Field) => {
-            setFilters(addFilterRule(filters, field));
+            setFilters(addFilterRule({ filters, field }));
             toggleFieldInput(false);
         },
         [filters, setFilters, toggleFieldInput],

@@ -251,12 +251,13 @@ export interface CompiledDimension extends Dimension {
 
 export type CompiledField = CompiledDimension | CompiledMetric;
 
-export const isDimension = (field: Field): field is Dimension =>
-    field.fieldType === FieldType.DIMENSION;
+export const isDimension = (
+    field: Pick<Field, 'fieldType'>,
+): field is Dimension => field.fieldType === FieldType.DIMENSION;
 
 // Field ids are unique across the project
 export type FieldId = string;
-export const fieldId = (field: Field): FieldId =>
+export const fieldId = (field: Pick<Field, 'table' | 'name'>): FieldId =>
     `${field.table}_${field.name}`;
 
 export const findFieldByIdInExplore = (
@@ -404,7 +405,16 @@ export const filterableDimensionsOnly = (
     dimensions: Dimension[],
 ): FilterableDimension[] => dimensions.filter(isFilterableDimension);
 
-export const addFilterRule = (filters: Filters, field: Field): Filters => {
+type AddFilterRuleArgs = {
+    filters: Filters;
+    field: Pick<Field, 'table' | 'name' | 'fieldType'>;
+    value?: any;
+};
+export const addFilterRule = ({
+    filters,
+    field,
+    value,
+}: AddFilterRuleArgs): Filters => {
     const groupKey = isDimension(field) ? 'dimensions' : 'metrics';
     const group = filters[groupKey];
     return {
@@ -420,6 +430,7 @@ export const addFilterRule = (filters: Filters, field: Field): Filters => {
                         fieldId: fieldId(field),
                     },
                     operator: FilterOperator.EQUALS,
+                    ...(value !== undefined ? { values: [value] } : {}),
                 },
             ],
         },
