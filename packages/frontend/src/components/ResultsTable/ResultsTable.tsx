@@ -1,13 +1,5 @@
-import {
-    Button,
-    Colors,
-    HTMLTable,
-    Icon,
-    Menu,
-    MenuItem,
-    Tag,
-} from '@blueprintjs/core';
-import { ContextMenu2, Tooltip2 } from '@blueprintjs/popover2';
+import { Button, Colors, HTMLTable, Icon, Tag } from '@blueprintjs/core';
+import { Tooltip2 } from '@blueprintjs/popover2';
 import { DimensionType, hexToRGB } from 'common';
 import React, { FC, ReactNode, useEffect } from 'react';
 import {
@@ -30,6 +22,8 @@ import { useFilters } from '../../hooks/useFilters';
 import { TrackSection } from '../../providers/TrackingProvider';
 import { SectionName } from '../../types/Events';
 import TableCalculationHeaderButton from '../TableCalculationHeaderButton';
+import { CellContextMenu } from './CellContextMenu';
+import { ColumnHeaderContextMenu } from './ColumnHeaderContextMenu';
 import { EmptyState, IdleState, LoadingState } from './States';
 
 const getSortIndicator = (
@@ -120,7 +114,9 @@ const Item: FC<ItemProps> = ({
             ...getItemStyle(snapshot, draggableProps.style),
         }}
     >
-        {column?.render('Header')}
+        <ColumnHeaderContextMenu column={column}>
+            {column?.render('Header')}
+        </ColumnHeaderContextMenu>
         {column?.isSorted &&
             getSortIndicator(
                 column.type,
@@ -384,27 +380,13 @@ export const ResultsTable: FC<Props> = ({
                                                             ),
                                                         ])}
                                                     >
-                                                        <ContextMenu2
-                                                            content={
-                                                                <Menu>
-                                                                    <MenuItem
-                                                                        label={`Filter on "${cell.value}"`}
-                                                                        onClick={() => {
-                                                                            addFilter(
-                                                                                cell
-                                                                                    .column
-                                                                                    .field,
-                                                                                cell.value,
-                                                                            );
-                                                                        }}
-                                                                    />
-                                                                </Menu>
-                                                            }
+                                                        <CellContextMenu
+                                                            cell={cell}
                                                         >
                                                             {cell.render(
                                                                 'Cell',
                                                             )}
-                                                        </ContextMenu2>
+                                                        </CellContextMenu>
                                                     </td>
                                                 ))}
                                             </tr>
